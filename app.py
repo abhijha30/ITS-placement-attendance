@@ -3,26 +3,30 @@ import pandas as pd
 import os
 
 app = Flask(__name__)
-app.secret_key = "your-secret-key"   # required for session login
+app.secret_key = "your-secret-key"
 FILE_NAME = "placement_attendance.xlsx"
-ADMIN_PASSWORD = "itsplacement"     # change this to your own password
+ADMIN_PASSWORD = "itsplacement"
 
-# Create Excel file if missing
+# Ensure Excel file exists with new columns
 if not os.path.exists(FILE_NAME):
-    pd.DataFrame(columns=["Name", "Roll No", "Date", "Company", "Status"]).to_excel(FILE_NAME, index=False)
+    pd.DataFrame(columns=["Name", "Roll No", "Course", "Section", "Date", "Company", "Status"]).to_excel(FILE_NAME, index=False)
 
-# ---------------- Student Panel (Form only) ----------------
+# ---------------- Student Panel ----------------
 @app.route('/', methods=["GET", "POST"])
 def index():
     if request.method == "POST":
         df = pd.read_excel(FILE_NAME)
+
         new_data = {
             "Name": request.form.get("name"),
             "Roll No": request.form.get("roll"),
+            "Course": request.form.get("course"),
+            "Section": request.form.get("section"),
             "Date": request.form.get("date"),
             "Company": request.form.get("company"),
             "Status": request.form.get("status")
         }
+
         df = pd.concat([df, pd.DataFrame([new_data])], ignore_index=True)
         df.to_excel(FILE_NAME, index=False)
         return render_template("submitted.html")
