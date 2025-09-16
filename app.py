@@ -3,11 +3,11 @@ import pandas as pd
 import os
 
 app = Flask(__name__)
-app.secret_key = "your-secret-key"
+app.secret_key = "super-secret-key"   # IMPORTANT for session to work
 FILE_NAME = "placement_attendance.xlsx"
-ADMIN_PASSWORD = "itsplacement"
+ADMIN_PASSWORD = "itsplacement"      # Change to your own password
 
-# Ensure Excel file exists with new columns
+# Ensure Excel file exists
 if not os.path.exists(FILE_NAME):
     pd.DataFrame(columns=["Name", "Roll No", "Course", "Section", "Date", "Company", "Status"]).to_excel(FILE_NAME, index=False)
 
@@ -42,7 +42,7 @@ def admin():
             return redirect(url_for("records"))
         else:
             return render_template("admin.html", error="❌ Wrong password!")
-    return render_template("admin.html")
+    return render_template("admin.html", error=None)
 
 # ---------------- Admin Panel ----------------
 @app.route('/records')
@@ -68,4 +68,3 @@ def logout():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
